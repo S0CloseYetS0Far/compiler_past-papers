@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Compilers Question Bank</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one centered study column (~46rem). Home = chapter grid; practice = one question sheet + frame strip + nav bar. */
+:root {
+  --paper: #f2f4f8;
+  --sheet: #ffffff;
+  --ink: #131a2b;
+  --muted: #55627a;
+  --rule: #d8dee9;
+  --accent: #0b6e86;
+  --accent-ink: #ffffff;
+  --accent-soft: #e2f1f5;
+  --mark: #ffe680;
+  --mark-ink: #2d2600;
+  --ok: #157a3b;
+  --ok-soft: #e4f5ea;
+  --bad: #b3261e;
+  --bad-soft: #fcebea;
+  --frame: #e6eaf1;
+  --shadow: 0 1px 2px rgba(19, 26, 43, .06), 0 6px 24px rgba(19, 26, 43, .06);
+  --glass: rgba(255, 255, 255, .55);
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e131c; --sheet: #151c28; --ink: #e5eaf3; --muted: #9aa6bc; --rule: #283245;
+    --accent: #5cc4d9; --accent-ink: #06222a; --accent-soft: #12303a;
+    --mark: #5a4c0e; --mark-ink: #fff3c4;
+    --ok: #58d17f; --ok-soft: #10291b; --bad: #ff8a80; --bad-soft: #2f1615; --frame: #222b3b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 24px rgba(0, 0, 0, .25);
+    --glass: rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e131c; --sheet: #151c28; --ink: #e5eaf3; --muted: #9aa6bc; --rule: #283245;
+  --accent: #5cc4d9; --accent-ink: #06222a; --accent-soft: #12303a;
+  --mark: #5a4c0e; --mark-ink: #fff3c4;
+  --ok: #58d17f; --ok-soft: #10291b; --bad: #ff8a80; --bad-soft: #2f1615; --frame: #222b3b;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 24px rgba(0, 0, 0, .25);
+  --glass: rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font: 400 1rem/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 5rem;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--paper);
+}
+.wrap { max-width: 46rem; margin: 0 auto; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; letter-spacing: -0.01em; margin: 0; }
+.mono { font-family: var(--f-mono); }
+.label { font: 500 .72rem/1.2 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+code { font: 400 .92em/1.4 var(--f-mono); background: var(--frame); border-radius: 4px; padding: .06rem .3rem; overflow-wrap: anywhere; }
+
+/* ---------- top bar ---------- */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding: .7rem max(16px, env(safe-area-inset-left, 0px));
+}
+.top .wrap { display: flex; align-items: center; gap: .75rem; }
+.brand { display: flex; align-items: baseline; gap: .55rem; min-width: 0; background: none; border: 0; padding: 0; }
+.brand b { font: 700 1.15rem/1 var(--f-display); }
+.brand span { font: 500 .75rem/1 var(--f-mono); color: var(--muted); white-space: nowrap; }
+.top .spacer { flex: 1; }
+.iconbtn {
+  border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px;
+  padding: .35rem .75rem; font-size: .85rem; display: inline-flex; align-items: center; gap: .4rem; white-space: nowrap;
+}
+.iconbtn:hover { border-color: var(--accent); }
+
+/* ---------- home ---------- */
+.hero { padding-block: 2.2rem 1.4rem; display: grid; gap: .8rem; }
+.hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.08; }
+.hero p { margin: 0; color: var(--muted); max-width: 38rem; }
+.stats { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; font: 500 .85rem/1.4 var(--f-mono); color: var(--muted); }
+.stats b { color: var(--ink); font-weight: 600; }
+
+.controls {
+  display: grid; gap: .9rem; padding: 1rem 1.1rem; margin-bottom: 1.4rem;
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px;
+}
+.ctl-row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; }
+.ctl-row > .label:first-child { width: 7.2rem; flex: none; }
+.chip {
+  border: 1px solid var(--rule); background: transparent; border-radius: 999px;
+  padding: .3rem .8rem; font-size: .88rem;
+}
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.switch { display: inline-flex; align-items: center; gap: .55rem; font-size: .92rem; background: none; border: 0; padding: .2rem 0; }
+.switch i {
+  width: 2.3rem; height: 1.3rem; border-radius: 999px; background: var(--frame); position: relative; flex: none;
+  transition: background .15s;
+}
+.switch i::after {
+  content: ""; position: absolute; top: .15rem; left: .15rem; width: 1rem; height: 1rem; border-radius: 50%;
+  background: var(--sheet); box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .15s;
+}
+.switch[aria-checked="true"] i { background: var(--accent); }
+.switch[aria-checked="true"] i::after { transform: translateX(1rem); }
+
+.group-title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 1.6rem 0 .7rem; }
+.group-title h2 { font-size: 1.15rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr)); gap: .7rem; }
+.ch {
+  text-align: left; display: grid; grid-template-columns: auto 1fr; gap: .2rem .85rem; align-items: start;
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: .9rem 1rem;
+  transition: border-color .15s, transform .15s;
+}
+.ch:hover { border-color: var(--accent); transform: translateY(-1px); }
+.ch .num {
+  grid-row: span 3; font: 700 1.9rem/1 var(--f-display); color: var(--accent); min-width: 2.2ch;
+  font-variant-numeric: tabular-nums;
+}
+.ch .t { font-weight: 600; line-height: 1.3; }
+.ch .meta { font: 400 .78rem/1.4 var(--f-mono); color: var(--muted); }
+.ch .bar { height: 4px; border-radius: 99px; background: var(--frame); overflow: hidden; margin-top: .35rem; }
+.ch .bar span { display: block; height: 100%; background: var(--ok); }
+.ch.all { grid-column: 1 / -1; background: var(--accent-soft); border-color: transparent; }
+.ch.all .num { color: var(--ink); }
+.ch.miss { grid-column: 1 / -1; background: var(--bad-soft); border-color: transparent; }
+.ch.miss .num { color: var(--bad); }
+
+.note { font-size: .88rem; color: var(--muted); margin-top: 2rem; }
+.note b { color: var(--ink); font-weight: 600; }
+
+/* ---------- practice ---------- */
+.qhead { display: grid; gap: .6rem; padding-block: 1.3rem .9rem; }
+.qhead .row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
+.qhead h2 { font-size: 1.05rem; font-family: var(--f-body); font-weight: 600; letter-spacing: 0; }
+.pos { font: 500 .85rem/1 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.tag {
+  font: 500 .72rem/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase;
+  border: 1px solid var(--rule); border-radius: 6px; padding: .3rem .45rem; color: var(--muted);
+}
+.tag.bad { color: var(--bad); border-color: var(--bad); }
+
+/* frame strip: each question is one square, coloured by how it went */
+.frames { display: flex; flex-wrap: wrap; gap: 3px; }
+.frames button {
+  width: 14px; height: 14px; padding: 0; border: 0; border-radius: 3px; background: var(--frame);
+}
+.frames button.seen { background: var(--rule); }
+.frames button.ok { background: var(--ok); }
+.frames button.bad { background: var(--bad); }
+.frames button.cur { outline: 2px solid var(--ink); outline-offset: 1px; }
+.frames-wrap { display: grid; gap: .35rem; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font: 400 .72rem/1.3 var(--f-mono); color: var(--muted); }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: .3rem; vertical-align: -1px; }
+
+.sheet {
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--shadow);
+  padding: clamp(1.1rem, 3vw, 1.8rem); display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.1rem; min-width: 0;
+}
+.qtext { font-size: 1.06rem; line-height: 1.65; min-width: 0; overflow-wrap: anywhere; }
+.qtext pre, .sol pre {
+  font: 400 .86rem/1.5 var(--f-mono); background: var(--paper); border: 1px solid var(--rule);
+  border-radius: 8px; padding: .7rem .85rem; overflow-x: auto; margin: .6rem 0; white-space: pre;
+}
+table.mini { border-collapse: collapse; margin: .55rem 0; font: 400 .88rem/1.4 var(--f-mono); font-variant-numeric: tabular-nums; }
+table.mini th, table.mini td { border: 1px solid var(--rule); padding: .28rem .6rem; text-align: center; }
+table.mini th { background: var(--paper); font-weight: 500; }
+.tbl { overflow-x: auto; max-width: 100%; }
+.fig { margin: 0; display: grid; gap: .35rem; }
+.fig img { display: block; max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--rule); background: #fff; }
+.fig figcaption { font-size: .78rem; color: var(--muted); }
+
+.opts { display: grid; gap: .5rem; }
+.opt {
+  display: grid; grid-template-columns: 2rem 1fr auto; align-items: center; gap: .7rem; text-align: left;
+  border: 1.5px solid var(--rule); border-radius: 11px; background: var(--sheet); padding: .6rem .8rem;
+  transition: border-color .12s, background .12s;
+}
+.opt:hover:not([disabled]) { border-color: var(--accent); background: var(--accent-soft); }
+.opt .key {
+  width: 2rem; height: 2rem; border-radius: 8px; display: grid; place-items: center;
+  font: 600 .9rem/1 var(--f-mono); background: var(--paper); border: 1px solid var(--rule);
+}
+.opt .txt { min-width: 0; overflow-wrap: anywhere; }
+.opt .res { font: 600 .78rem/1 var(--f-mono); letter-spacing: .04em; }
+.opt[disabled] { cursor: default; }
+.opt.right { border-color: var(--ok); background: var(--ok-soft); }
+.opt.right .key { background: var(--ok); color: var(--sheet); border-color: var(--ok); }
+.opt.right .res { color: var(--ok); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.wrong .key { background: var(--bad); color: var(--sheet); border-color: var(--bad); }
+.opt.wrong .res { color: var(--bad); }
+
+.reveal { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.btn {
+  border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper);
+  border-radius: 10px; padding: .55rem 1.05rem; font-weight: 600; font-size: .95rem;
+}
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.accent { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn[disabled] { opacity: .4; cursor: default; }
+
+.verdict { display: flex; align-items: center; gap: .6rem; font-weight: 600; }
+.verdict.ok { color: var(--ok); }
+.verdict.bad { color: var(--bad); }
+
+.sol { border-top: 1px dashed var(--rule); padding-top: 1.1rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; min-width: 0; }
+.sol h3 { font: 500 .72rem/1.2 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.answer {
+  background: var(--mark); color: var(--mark-ink); border-radius: 10px; padding: .75rem .95rem;
+  overflow-wrap: anywhere; min-width: 0;
+}
+.answer pre { background: var(--glass); color: inherit; }
+.answer code { background: var(--glass); }
+.answer table.mini th { background: var(--glass); }
+.answer table.mini th, .answer table.mini td { border-color: var(--mark-ink); }
+.expl { overflow-wrap: anywhere; min-width: 0; }
+.selfgrade { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.selfgrade .label { margin-right: .3rem; }
+
+.where { display: grid; gap: .7rem; background: var(--paper); border-radius: 12px; padding: .9rem 1rem; }
+.where .item { display: grid; grid-template-columns: 6.5rem 1fr; gap: .2rem .8rem; align-items: baseline; }
+.where .item > .label { padding-top: .15rem; }
+.where ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .45rem; }
+.where li { min-width: 0; overflow-wrap: anywhere; }
+.where .file { display: block; font: 400 .78rem/1.4 var(--f-mono); color: var(--muted); overflow-wrap: anywhere; }
+.where .say { display: block; font-size: .92rem; margin-top: .2rem; }
+.where a { color: var(--accent); }
+.slideref { font-weight: 600; }
+.slideref mark { background: var(--mark); color: var(--mark-ink); padding: .05rem .35rem; border-radius: 4px; font-family: var(--f-mono); font-weight: 500; }
+
+/* bottom nav */
+.navbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+  background: var(--sheet); border-top: 1px solid var(--rule);
+  padding: .6rem max(16px, env(safe-area-inset-right, 0px)) calc(.6rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.navbar .wrap { display: flex; align-items: center; gap: .6rem; }
+.navbar .mid { flex: 1; text-align: center; font: 500 .8rem/1.3 var(--f-mono); color: var(--muted); min-width: 0; }
+.kbd { font: 500 .72rem/1 var(--f-mono); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: .1rem .3rem; }
+
+/* done */
+.done { padding-block: 2rem; display: grid; gap: 1.2rem; }
+.score { font: 700 clamp(2.6rem, 9vw, 4rem)/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.tally { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; font: 500 .85rem/1.4 var(--f-mono); color: var(--muted); }
+.tally b { font-weight: 600; color: var(--ink); }
+.tally .bad b { color: var(--bad); }
+.tally .ok b { color: var(--ok); }
+.missed { display: grid; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.missed button { text-align: left; width: 100%; border: 1px solid var(--rule); background: var(--sheet); border-radius: 10px; padding: .55rem .8rem; }
+.missed button:hover { border-color: var(--accent); }
+
+@media (max-width: 560px) {
+  .ctl-row > .label:first-child { width: 100%; }
+  .where .item { grid-template-columns: 1fr; }
+  .brand span { display: none; }
+  .hide-sm { display: none; }
+  .navbar .btn { padding-inline: .75rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <button class="brand" id="homeBtn" type="button" aria-label="Back to chapters"><b>Compilers Question Bank</b><span>CS445</span></button>
+    <div class="spacer"></div>
+    <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch theme">Theme: <span id="themeLbl">system</span></button>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<nav class="navbar" id="navbar" hidden>
+  <div class="wrap">
+    <button class="btn ghost" id="prevBtn" type="button">← Previous</button>
+    <button class="btn ghost" id="shuffleBtn" type="button">Shuffle</button>
+    <div class="mid" id="navMid"></div>
+    <button class="btn" id="nextBtn" type="button">Next →</button>
+  </div>
+</nav>
+
+<script src="questions.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.QDATA;
+  var app = document.getElementById("app");
+  var navbar = document.getElementById("navbar");
+  var STORE = "cs445bank.v1";
+
+  // ---------- persistence (per-viewer convenience only) ----------
+  var saved = { answers: {}, shuffle: false, types: ["mcq", "tf", "short"] };
+  try { var raw = localStorage.getItem(STORE); if (raw) saved = Object.assign(saved, JSON.parse(raw)); } catch (e) {}
+  function persist() { try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch (e) {} }
+
+  // ---------- theme ----------
+  var themes = ["system", "light", "dark"];
+  var theme = "system";
+  try { theme = localStorage.getItem(STORE + ".theme") || "system"; } catch (e) {}
+  function applyTheme() {
+    if (theme === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", theme);
+    document.getElementById("themeLbl").textContent = theme;
+  }
+  applyTheme();
+  document.getElementById("themeBtn").addEventListener("click", function () {
+    theme = themes[(themes.indexOf(theme) + 1) % 3];
+    try { localStorage.setItem(STORE + ".theme", theme); } catch (e) {}
+    applyTheme();
+  });
+
+  // ---------- helpers ----------
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  // Answers are saved under the question's stable key, so rebuilding the data keeps progress.
+  function chNums() { return Object.keys(D.chapters).map(Number).sort(function (a, b) { return a - b; }); }
+  var TYPE_LABEL = { mcq: "Multiple choice", tf: "True / False", short: "Written" };
+  var byCh = {}, byId = {};
+  D.questions.forEach(function (q) { (byCh[q.ch] = byCh[q.ch] || []).push(q); byId[q.k] = q; });
+  function plural(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
+
+  function shuffled(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function chTitle(n) {
+    if (n === "all") return "All chapters";
+    if (n === "mistakes") return "My mistakes";
+    if (n === 0) return D.chapters[0].title;
+    return "Chapter " + n + " · " + D.chapters[n].title;
+  }
+  function rec(id) { return saved.answers[id] || {}; }
+  function isMistake(id) { var r = saved.answers[id]; return !!(r && r.done && r.ok === false); }
+  function allMistakes() { return D.questions.filter(function (q) { return isMistake(q.k); }).map(function (q) { return q.k; }); }
+
+  // ---------- state ----------
+  var S = { view: "home", chapter: null, order: [], idx: 0, shuffledNow: false, review: false, parent: null };
+  var resetArmed = false;
+
+  function poolFor(ch) {
+    var list = ch === "all" ? D.questions.slice() : (byCh[ch] || []).slice();
+    return list.filter(function (q) { return saved.types.indexOf(q.t) >= 0; });
+  }
+  function start(ch, ids, opts) {
+    opts = opts || {};
+    var list = ids ? ids.map(function (id) { return byId[id]; }) : poolFor(ch);
+    if (!list.length) return;
+    S.chapter = ch;
+    S.review = !!opts.review;
+    S.parent = opts.parent || null;
+    S.shuffledNow = !S.review && saved.shuffle;
+    S.order = (S.shuffledNow ? shuffled(list) : list).map(function (q) { return q.k; });
+    S.idx = 0;
+    if (!S.review && !S.shuffledNow) {
+      var next = S.order.findIndex(function (id) { return !rec(id).done; });
+      if (next > 0) S.idx = next;   // pick up where you stopped
+    }
+    S.view = "quiz";
+    render();
+  }
+
+  // ---------- home ----------
+  function answeredStats(list) {
+    var ok = 0, done = 0, bad = 0;
+    list.forEach(function (q) {
+      var a = saved.answers[q.k];
+      if (a && a.done) { done++; if (a.ok === true) ok++; else if (a.ok === false) bad++; }
+    });
+    return { ok: ok, done: done, bad: bad };
+  }
+  function renderHome() {
+    navbar.hidden = true;
+    var total = D.questions.length;
+    var exams = Object.keys(D.sources).length;
+    var refs = D.questions.reduce(function (n, q) { return n + q.from.length; }, 0);
+    var st = answeredStats(D.questions);
+    var h = '<section class="hero"><span class="label">Exam questions sorted by lecture slides</span>' +
+      '<h1>Practice every past Compilers exam question, chapter by chapter.</h1>' +
+      '<p>Each question is solved from your slides and shows the deck and slide the answer comes from. Pick a chapter, answer one question at a time, and review your mistakes when you finish.</p>' +
+      '<div class="stats"><span><b>' + total + '</b> unique questions</span><span><b>' + refs + '</b> appearances across <b>' + exams + '</b> exams &amp; quizzes</span><span><b>' + st.done + '</b> answered · <b>' + st.ok + '</b> correct · <b>' + st.bad + '</b> mistakes</span></div></section>';
+
+    h += '<section class="controls" aria-label="Practice settings">' +
+      '<div class="ctl-row"><span class="label">Order</span>' +
+      '<button type="button" class="switch" id="shuffleSw" role="switch" aria-checked="' + (saved.shuffle ? "true" : "false") + '"><i></i>Start in random order</button><span class="label">' + (saved.shuffle ? 'random order' : 'newest exam first') + '</span></div>' +
+      '<div class="ctl-row"><span class="label">Question types</span>' +
+      ["mcq", "tf", "short"].map(function (t) {
+        return '<button type="button" class="chip" data-type="' + t + '" aria-pressed="' + (saved.types.indexOf(t) >= 0) + '">' + TYPE_LABEL[t] + '</button>';
+      }).join("") + '</div>' +
+      '<div class="ctl-row"><span class="label">Progress</span>' +
+      (st.done
+        ? (resetArmed
+          ? '<span style="font-size:.9rem">Clear all ' + st.done + ' saved answers?</span><button type="button" class="chip" id="resetYes">Yes, reset</button><button type="button" class="chip" id="resetNo">Cancel</button>'
+          : '<button type="button" class="chip" id="resetBtn">Reset my answers</button>')
+        : '<span style="font-size:.9rem;color:var(--muted)">No answers saved yet</span>') +
+      '</div></section>';
+
+    var main = chNums().filter(function (n) { return n > 0 && byCh[n]; });
+    h += '<div class="group-title"><h2>Lecture chapters</h2><span class="label">' + main.length + ' decks</span></div><div class="grid">';
+    h += chapterCard("all");
+    var miss = allMistakes();
+    if (miss.length) {
+      h += '<button type="button" class="ch miss" id="allMistakes"><span class="num">' + miss.length + '</span><span class="t">Review my mistakes</span>' +
+        '<span class="meta">Every question you got wrong, with your answer and the solution</span></button>';
+    }
+    main.forEach(function (n) { h += chapterCard(n); });
+    h += '</div>';
+    if (byCh[0]) {
+      h += '<div class="group-title"><h2>Not in your slides</h2><span class="label">older exams</span></div>' +
+        '<p class="note" style="margin-top:0">Older exams asked about these topics, but your current decks do not teach them.</p><div class="grid">' + chapterCard(0) + '</div>';
+    }
+    h += '<p class="note"><b>Keys:</b> <span class="kbd">←</span> <span class="kbd">→</span> move between questions, <span class="kbd">1</span>–<span class="kbd">6</span> pick an option, <span class="kbd">Enter</span> shows the solution, <span class="kbd">S</span> shuffles. Your answers are remembered in this browser only.</p>';
+    app.innerHTML = h;
+
+    document.getElementById("shuffleSw").addEventListener("click", function () {
+      saved.shuffle = !saved.shuffle; persist(); renderHome();
+    });
+    var rb = document.getElementById("resetBtn");
+    if (rb) rb.addEventListener("click", function () { resetArmed = true; renderHome(); });
+    var ry = document.getElementById("resetYes");
+    if (ry) ry.addEventListener("click", function () { saved.answers = {}; resetArmed = false; persist(); renderHome(); });
+    var rn = document.getElementById("resetNo");
+    if (rn) rn.addEventListener("click", function () { resetArmed = false; renderHome(); });
+    var am = document.getElementById("allMistakes");
+    if (am) am.addEventListener("click", function () { start("mistakes", allMistakes(), { review: true }); });
+    app.querySelectorAll("[data-type]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var t = b.getAttribute("data-type"), i = saved.types.indexOf(t);
+        if (i >= 0) { if (saved.types.length > 1) saved.types.splice(i, 1); } else saved.types.push(t);
+        persist(); renderHome();
+      });
+    });
+    app.querySelectorAll("[data-ch]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var v = b.getAttribute("data-ch"); start(v === "all" ? "all" : +v);
+      });
+    });
+  }
+  function chapterCard(n) {
+    var list = poolFor(n);
+    var all = n === "all" ? D.questions : byCh[n];
+    var st = answeredStats(all);
+    var pct = all.length ? Math.round(100 * st.done / all.length) : 0;
+    var meta, title, num;
+    if (n === "all") { num = "∗"; title = "All chapters mixed"; meta = list.length + " questions · good for a full mock exam"; }
+    else if (n === 0) { num = "–"; title = D.chapters[0].title; meta = plural(list.length, "question"); }
+    else {
+      var c = D.chapters[n];
+      num = n; title = c.title;
+      meta = plural(list.length, "question") + " · " + c.slides + " slides";
+    }
+    return '<button type="button" class="ch' + (n === "all" ? " all" : "") + '" data-ch="' + n + '"' + (list.length ? "" : " disabled") + '>' +
+      '<span class="num">' + num + '</span><span class="t">' + esc(title) + '</span>' +
+      '<span class="meta">' + esc(meta) + (st.done ? " · " + st.done + " done" : "") + (st.bad ? " · " + plural(st.bad, "mistake") : "") + '</span>' +
+      '<span class="bar" aria-hidden="true"><span style="width:' + pct + '%"></span></span></button>';
+  }
+
+  // ---------- question ----------
+  function accepted(q) { return q.acc || [q.a]; }
+  function renderQuiz() {
+    var id = S.order[S.idx], q = byId[id], r = rec(id);
+    var n = S.order.length;
+    navbar.hidden = false;
+    var h = '<section class="qhead"><div class="row"><span class="pos">' + (S.idx + 1) + ' / ' + n + '</span>' +
+      '<h2>' + esc(chTitle(S.chapter === "all" || S.chapter === "mistakes" ? q.ch : S.chapter)) + '</h2></div>' +
+      '<div class="row"><span class="tag">' + TYPE_LABEL[q.t] + '</span>' + (q.tp ? '<span class="tag">' + esc(q.tp) + '</span>' : '') +
+      (S.review ? '<span class="tag bad">Reviewing mistakes</span>' : '') + (S.shuffledNow ? '<span class="tag">Shuffled</span>' : '') + '</div>' +
+      '<div class="frames-wrap"><div class="frames" role="list" aria-label="Questions in this set">' +
+      S.order.map(function (qid, i) {
+        var a = saved.answers[qid], cls = [];
+        if (a && a.done) cls.push(a.ok === true ? "ok" : (a.ok === false ? "bad" : "seen"));
+        if (i === S.idx) cls.push("cur");
+        return '<button type="button" role="listitem" class="' + cls.join(" ") + '" data-jump="' + i + '" aria-label="Question ' + (i + 1) + '"></button>';
+      }).join("") + '</div><div class="legend"><span><i style="background:var(--ok)"></i>correct</span><span><i style="background:var(--bad)"></i>mistake</span><span><i style="background:var(--rule)"></i>viewed</span><span><i style="background:var(--frame)"></i>not yet</span></div></div></section>';
+
+    h += '<article class="sheet" aria-live="polite"><div class="qtext">' + wrapTables(q.q) + '</div>';
+    if (q.img) h += '<figure class="fig"><img src="img/' + esc(q.img) + '" alt="Figure from the original exam paper" loading="lazy"><figcaption>Figure from the exam paper</figcaption></figure>';
+
+    var revealed = !!r.done;
+    if (q.t === "mcq" || q.t === "tf") {
+      var acc = accepted(q);
+      h += '<div class="opts" role="group" aria-label="Answer options">' + q.o.map(function (o, i) {
+        var cls = "opt", res = "";
+        if (revealed) {
+          if (i === q.a) { cls += " right"; res = i === r.choice ? "YOUR PICK ✓" : "ANSWER"; }
+          else if (acc.indexOf(i) >= 0) { cls += " right"; res = i === r.choice ? "YOUR PICK ✓" : "ALSO ACCEPTED"; }
+          else if (i === r.choice) { cls += " wrong"; res = "YOUR PICK"; }
+        }
+        return '<button type="button" class="' + cls + '" data-opt="' + i + '"' + (revealed ? " disabled" : "") + '>' +
+          '<span class="key">' + (q.t === "tf" ? (i === 0 ? "T" : "F") : String.fromCharCode(65 + i)) + '</span>' +
+          '<span class="txt">' + esc(o) + '</span><span class="res">' + res + '</span></button>';
+      }).join("") + '</div>';
+      if (revealed) {
+        var ans = q.t === "tf" ? esc(q.o[q.a]) : String.fromCharCode(65 + q.a);
+        if (r.ok) h += '<div class="verdict ok">✓ Correct</div>';
+        else if (r.choice === -1) h += '<div class="verdict bad">You opened the solution without answering. The answer is ' + ans + '. This counts as a mistake to review.</div>';
+        else h += '<div class="verdict bad">✗ Not quite. The answer is ' + ans + '.</div>';
+      } else {
+        h += '<div class="reveal"><button type="button" class="btn accent" id="showSol">Show solution</button><span class="label">Or pick an option above</span></div>';
+      }
+    } else if (!revealed) {
+      h += '<div class="reveal"><button type="button" class="btn accent" id="showSol">Show solution</button><span class="label">Work it out first, then compare</span></div>';
+    }
+
+    if (revealed) h += solution(q, r);
+    h += '</article>';
+    app.innerHTML = h;
+
+    // wire
+    app.querySelectorAll("[data-opt]").forEach(function (b) {
+      b.addEventListener("click", function () { choose(+b.getAttribute("data-opt")); });
+    });
+    var ss = document.getElementById("showSol");
+    if (ss) ss.addEventListener("click", reveal);
+    app.querySelectorAll("[data-grade]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var a = saved.answers[id] || {}; a.done = true; a.ok = b.getAttribute("data-grade") === "1";
+        saved.answers[id] = a; persist(); renderQuiz();
+      });
+    });
+    var ta = document.getElementById("tryAgain");
+    if (ta) ta.addEventListener("click", function () { delete saved.answers[id]; persist(); renderQuiz(); });
+    app.querySelectorAll("[data-jump]").forEach(function (b) {
+      b.addEventListener("click", function () { S.idx = +b.getAttribute("data-jump"); render(); });
+    });
+
+    document.getElementById("prevBtn").disabled = S.idx === 0;
+    document.getElementById("nextBtn").textContent = S.idx === n - 1 ? "Finish →" : "Next →";
+    var st = answeredStats(S.order.map(function (x) { return byId[x]; }));
+    document.getElementById("navMid").innerHTML = '<span class="hide-sm">' + st.done + ' answered · ' + st.ok + ' correct</span>';
+  }
+  function wrapTables(html) { return html.replace(/<table class="mini">/g, '<div class="tbl"><table class="mini">').replace(/<\/table>/g, "</table></div>"); }
+
+  function slideWord(sl) { return /^\d+$/.test(String(sl)) ? "slide" : "slides"; }
+  function slideLink(q) {
+    // The PDFs sit next to this folder, so the link only works when the site is opened from disk.
+    if (location.protocol !== "file:" || !q.sl) return "";
+    var first = String(q.sl).match(/\d+/)[0];
+    return ' · <a href="../slides/' + encodeURIComponent(D.chapters[q.ch].deck) + '#page=' + first + '" target="_blank" rel="noopener">Open slide ' + first + '</a>';
+  }
+  function solution(q, r) {
+    var h = '<section class="sol" aria-label="Solution">';
+    if (q.t === "short") {
+      h += '<div><h3>Answer</h3><div class="answer">' + wrapTables(q.a) + '</div></div>';
+    } else {
+      h += '<div><h3>Answer</h3><div class="answer"><b>' + (q.t === "tf" ? "" : String.fromCharCode(65 + q.a) + ". ") + esc(q.o[q.a]) + '</b></div></div>';
+    }
+    h += '<div><h3>How it is solved</h3><div class="expl">' + wrapTables(q.e) + '</div></div>';
+    if (q.aimg) h += '<figure class="fig"><img src="img/' + esc(q.aimg) + '" alt="Worked answer drawing" loading="lazy"><figcaption>Answer drawing from the marked paper</figcaption></figure>';
+    if (q.t === "short") {
+      var g = r.ok === true ? "1" : r.ok === false ? "0" : "";
+      h += '<div class="selfgrade"><span class="label">Did you get it?</span>' +
+        '<button type="button" class="btn ' + (g === "1" ? "accent" : "ghost") + '" data-grade="1">Yes, I got it</button>' +
+        '<button type="button" class="btn ' + (g === "0" ? "" : "ghost") + '" data-grade="0">No, add to mistakes</button></div>';
+    }
+    h += '<div class="reveal"><button type="button" class="btn ghost" id="tryAgain">Try this question again</button></div>';
+
+    // where the answer comes from
+    var c = D.chapters[q.ch], lect;
+    if (c.deck && q.sl) {
+      lect = '<span class="slideref">Chapter ' + q.ch + ' — ' + esc(c.title) + ', ' + slideWord(q.sl) + ' <mark>' + esc(q.sl) + '</mark></span>' +
+        '<span class="file">slides/' + esc(c.deck) + slideLink(q) + '</span>';
+    } else {
+      lect = '<span class="slideref">Not covered in the current slides</span>';
+    }
+    if (q.n) lect += '<span class="say">' + esc(q.n) + '</span>';
+    h += '<div class="where"><div class="item"><span class="label">In the slides</span><div>' + lect + '</div></div>' +
+      '<div class="item"><span class="label">Exam source' + (q.from.length > 1 ? "s" : "") + '</span><ul>' +
+      q.from.map(function (f) {
+        var s = D.sources[f.s];
+        return '<li><b>' + esc(s.label) + '</b> — ' + esc(f.qn) + '<span class="file">' + esc(s.file) + (f.pg ? ' · page ' + f.pg : '') + '</span></li>';
+      }).join("") + '</ul></div></div>';
+    h += '</section>';
+    return h;
+  }
+
+  function choose(i) {
+    var id = S.order[S.idx], q = byId[id];
+    if (!(q.t === "mcq" || q.t === "tf")) return;
+    var r = saved.answers[id];
+    if (r && r.done) return;
+    saved.answers[id] = { done: true, choice: i, ok: accepted(q).indexOf(i) >= 0 };
+    persist(); renderQuiz();
+  }
+  function reveal() {
+    var id = S.order[S.idx], q = byId[id];
+    var r = saved.answers[id] || {};
+    if (r.done) return;
+    if (q.t === "short") { r.done = true; r.ok = null; }
+    else { r.done = true; r.choice = -1; r.ok = false; }
+    saved.answers[id] = r; persist(); renderQuiz();
+  }
+  function shuffleSet() {
+    // The current question stays on screen as number 1; the rest are reordered.
+    var cur = S.order[S.idx];
+    var rest = S.order.filter(function (id) { return id !== cur; });
+    S.order = [cur].concat(shuffled(rest));
+    S.idx = 0;
+    S.shuffledNow = true;
+    render();
+  }
+
+  // ---------- done ----------
+  function renderDone() {
+    navbar.hidden = true;
+    var list = S.order.map(function (x) { return byId[x]; });
+    var st = answeredStats(list);
+    var missed = S.order.filter(isMistake);
+    var ungraded = S.order.filter(function (id) { var r = rec(id); return r.done && r.ok !== true && r.ok !== false; });
+    var skipped = S.order.filter(function (id) { return !rec(id).done; });
+    var h = '<section class="done"><span class="label">' + esc(chTitle(S.chapter)) + '</span>' +
+      '<div class="score">' + st.ok + ' / ' + list.length + '</div>' +
+      '<div class="tally"><span class="ok"><b>' + st.ok + '</b> correct</span><span class="bad"><b>' + missed.length + '</b> ' + (missed.length === 1 ? 'mistake' : 'mistakes') + '</span>' +
+      '<span><b>' + ungraded.length + '</b> not self-marked</span><span><b>' + skipped.length + '</b> skipped</span></div>' +
+      '<p style="margin:0;color:var(--muted)">Written questions count once you mark them “Yes, I got it” or “No, add to mistakes”.</p>' +
+      '<div class="reveal">' +
+      (missed.length ? '<button type="button" class="btn accent" id="reviewBtn">Review my mistakes (' + missed.length + ')</button>' : '') +
+      (missed.length ? '<button type="button" class="btn" id="retryMissed">Answer them again</button>' : '') +
+      (skipped.length ? '<button type="button" class="btn ghost" id="skippedBtn">Answer the ' + plural(skipped.length, 'skipped question') + '</button>' : '') +
+      '<button type="button" class="btn ghost" id="again">Start this set over</button>' +
+      '<button type="button" class="btn ghost" id="back">All chapters</button></div>';
+    if (missed.length) {
+      h += '<div><h3 class="label" style="margin:.4rem 0 .6rem">Your mistakes</h3><ul class="missed">' + missed.slice(0, 60).map(function (id) {
+        var q = byId[id];
+        return '<li><button type="button" data-goto="' + S.order.indexOf(id) + '"><span class="pos">' + (S.order.indexOf(id) + 1) + '.</span> ' + esc(q.tp || TYPE_LABEL[q.t]) + ' <span class="label">· ' + esc(D.sources[q.from[0].s].label) + '</span></button></li>';
+      }).join("") + '</ul></div>';
+    }
+    h += '</section>';
+    app.innerHTML = h;
+    var parent = { chapter: S.chapter, order: S.order.slice() };
+    var rv = document.getElementById("reviewBtn");
+    if (rv) rv.addEventListener("click", function () { start(S.chapter, missed, { review: true, parent: parent }); });
+    var rm = document.getElementById("retryMissed");
+    if (rm) rm.addEventListener("click", function () {
+      missed.forEach(function (id) { delete saved.answers[id]; }); persist();
+      start(S.chapter, missed, { parent: parent });
+    });
+    var sk = document.getElementById("skippedBtn");
+    if (sk) sk.addEventListener("click", function () { start(S.chapter, skipped, { parent: parent }); });
+    document.getElementById("again").addEventListener("click", function () {
+      S.order.forEach(function (id) { delete saved.answers[id]; }); persist();
+      start(S.chapter, S.order);
+    });
+    document.getElementById("back").addEventListener("click", goHome);
+    app.querySelectorAll("[data-goto]").forEach(function (b) {
+      b.addEventListener("click", function () { S.idx = +b.getAttribute("data-goto"); S.view = "quiz"; render(); });
+    });
+  }
+  function finish() {
+    if (S.parent) { S.chapter = S.parent.chapter; S.order = S.parent.order; S.parent = null; S.review = false; }
+    S.view = "done"; render();
+  }
+
+  function render() {
+    if (S.view === "home") renderHome();
+    else if (S.view === "quiz") renderQuiz();
+    else renderDone();
+    window.scrollTo(0, 0);
+  }
+  function goHome() { S.view = "home"; render(); }
+
+  document.getElementById("homeBtn").addEventListener("click", goHome);
+  document.getElementById("prevBtn").addEventListener("click", function () { if (S.idx > 0) { S.idx--; render(); } });
+  document.getElementById("shuffleBtn").addEventListener("click", shuffleSet);
+  document.getElementById("nextBtn").addEventListener("click", function () {
+    if (S.idx < S.order.length - 1) { S.idx++; render(); } else finish();
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (S.view !== "quiz" || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    var tag = (ev.target && ev.target.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if (ev.key === "ArrowRight") { document.getElementById("nextBtn").click(); ev.preventDefault(); }
+    else if (ev.key === "ArrowLeft") { if (S.idx > 0) { S.idx--; render(); } ev.preventDefault(); }
+    else if (ev.key === "s" || ev.key === "S") { shuffleSet(); }
+    else if (/^[1-6]$/.test(ev.key)) { var q = byId[S.order[S.idx]]; if (q.o && +ev.key <= q.o.length) choose(+ev.key - 1); }
+    else if (ev.key === "Enter" && tag !== "BUTTON") { reveal(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
